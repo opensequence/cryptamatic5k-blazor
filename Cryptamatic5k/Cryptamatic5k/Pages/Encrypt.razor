@@ -1,0 +1,34 @@
+﻿@page "/encrypt"
+
+<h1>Encrypt!</h1>
+<p>
+    <label for="plaintext">PlainText:</label>
+    <input @bind="plaintext" name="plaintext" />
+</p>
+<p>
+    <label for="key">Key:</label>
+    <input @bind="newSecret.Key" name="Key" />
+</p>
+   <p>
+
+   </p>     
+<label for="IV">EncryptedMessage:</label>
+<input @bind="base64EncryptedMessage" />
+<button @onclick="ExecuteEncrypt">Encrypt</button>
+<button @onclick="ExecuteDecrypt">Decrypt</button>
+@code{
+
+    private SecretItem newSecret = new SecretItem();
+    private string plaintext;
+    private string base64EncryptedMessage;
+    private void ExecuteEncrypt()
+    {
+        newSecret.Encrypt(plaintext);
+        base64EncryptedMessage = Convert.ToBase64String(newSecret.Message);
+    }
+        private void ExecuteDecrypt()
+    {
+        plaintext = newSecret.Decrypt(Convert.FromBase64String(base64EncryptedMessage));
+    }
+}
+
