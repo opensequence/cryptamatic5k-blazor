@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
-using Newtonsoft.Json;
 public class SecretItem
 {
     public int Version { get; set; }
@@ -15,7 +14,6 @@ public class SecretItem
     public string Key { get; set; }
     private string IV { get; set; } = "/oa4SbceDr5miR4ReRb1GQ==";
 
-//TODO-NOW: Design a method to turn the contents of this object into json
     public void Encrypt(string plainText)
     {
         // Create a new AesManaged.    
