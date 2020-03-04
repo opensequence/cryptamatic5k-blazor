@@ -3,7 +3,8 @@
 <h1>Encrypt!</h1>
 <p>
     <label for="plaintext">PlainText:</label>
-    <input @bind="plaintext" name="plaintext" />
+
+    <textarea class="form-control" rows="5" id='text'@bind="plaintext" name="plaintext" placeholder="Enter your secret."></textarea>
 </p>
 <p>
     <label for="key">Key:</label>
@@ -19,12 +20,21 @@
 @code{
 
     private SecretItem newSecret = new SecretItem();
+    private SecretItemJson newSecretJson = new SecretItemJson();
     private string plaintext;
+    private string json;
     private string base64EncryptedMessage;
     private void ExecuteEncrypt()
     {
-        newSecret.Encrypt(plaintext);
-        base64EncryptedMessage = Convert.ToBase64String(newSecret.Message);
+        //assign paintext message to .plaintextMessage property
+        newSecret.PlaintextMessage = plaintext;
+        // Assign values to JSON class
+        newSecretJson.PlaintextMessage = newSecret.PlaintextMessage;
+        newSecretJson.Key = newSecret.Key;
+        //Convert object to JSON
+        json = newSecretJson.ConvertToJson();
+        //Encrypt JSON string and display to user
+        base64EncryptedMessage = newSecret.Encrypt(json);
     }
         private void ExecuteDecrypt()
     {

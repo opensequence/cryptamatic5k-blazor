@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 public class SecretItem
 {
     public int Version { get; set; }
-    public byte[] Message { get; set; }
+    public string PlaintextMessage { get; set; }
     public bool FileAttached { get; set; } = false;
     public string FileName { get; set; }
     public int FileSize { get; set; }
@@ -12,17 +12,24 @@ public class SecretItem
     public string FileType { get; set; }
     public byte[] File { get; set; }
     public string Key { get; set; }
+    //TODO-NOW Take this IV Secret out
     private string IV { get; set; } = "/oa4SbceDr5miR4ReRb1GQ==";
 
-    public void Encrypt(string plainText)
+    public string Encrypt(string plainText)
     {
         // Create a new AesManaged.    
         using (AesManaged aes = new AesManaged())
         {
-            // Create encryptor    
-            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
             Key = Convert.ToBase64String(aes.Key);
-            IV = Convert.ToBase64String(aes.IV);
+            if (string.IsNullOrEmpty(IV))
+            {
+                IV = Convert.ToBase64String(aes.IV);
+
+            }
+            // Create encryptor    
+            ICryptoTransform encryptor = aes.CreateEncryptor(Convert.FromBase64String(Key), Convert.FromBase64String(IV));
+
+            
             // Create MemoryStream    
             using (MemoryStream ms = new MemoryStream())
             {
@@ -35,7 +42,7 @@ public class SecretItem
                     using (StreamWriter sw = new StreamWriter(cs))
                         sw.Write(plainText);
                     // Assign to property
-                    Message = ms.ToArray();
+                    return Convert.ToBase64String(ms.ToArray());
                 }
             }
         }
