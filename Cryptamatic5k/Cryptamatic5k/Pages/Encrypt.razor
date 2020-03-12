@@ -8,37 +8,42 @@
 </p>
 <p>
     <label for="key">Key:</label>
-    <input @bind="newSecret.Key" name="Key" />
+    <input @bind="key" name="Key" />
 </p>
    <p>
 
    </p>     
-<label for="IV">EncryptedMessage:</label>
-<input @bind="base64EncryptedMessage" />
+<label for="EncryptedMessage">EncryptedMessage:</label>
+<input @bind="EncryptedMessage" />
 <button @onclick="ExecuteEncrypt">Encrypt</button>
-<button @onclick="ExecuteDecrypt">Decrypt</button>
-@code{
 
-    private SecretItem newSecret = new SecretItem();
-    private SecretItemJson newSecretJson = new SecretItemJson();
+@code{
+    private opensequence.Cryptamatic5k.SecretItem newSecret = new opensequence.Cryptamatic5k.SecretItem();
+    private opensequence.Cryptamatic5k.SecretItemJson newSecretJson = new opensequence.Cryptamatic5k.SecretItemJson();
     private string plaintext;
+    private string key;
     private string json;
-    private string base64EncryptedMessage;
+    private string EncryptedMessage;
+    
     private void ExecuteEncrypt()
     {
-        //assign paintext message to .plaintextMessage property
+        //TODO-NOW Derive key from password (figure out reliably way to do this)
+//TODO-NOW Add try catches to handle exeception gracefully (popup's or something?)
+        //assign plaintext message to .plaintextMessage property
         newSecret.PlaintextMessage = plaintext;
+        
         // Assign values to JSON class
         newSecretJson.PlaintextMessage = newSecret.PlaintextMessage;
+        newSecret.Key = System.Text.Encoding.ASCII.GetBytes(key);
         newSecretJson.Key = newSecret.Key;
+        
         //Convert object to JSON
         json = newSecretJson.ConvertToJson();
+        
         //Encrypt JSON string and display to user
-        base64EncryptedMessage = newSecret.Encrypt(json);
-    }
-        private void ExecuteDecrypt()
-    {
-        plaintext = newSecret.Decrypt(Convert.FromBase64String(base64EncryptedMessage));
+        EncryptedMessage = newSecret.Encrypt(json);
+
+
     }
 }
 

@@ -1,73 +1,74 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
-public class SecretItem
+
+namespace opensequence.Cryptamatic5k
 {
-    public int Version { get; set; }
-    public string PlaintextMessage { get; set; }
-    public bool FileAttached { get; set; } = false;
-    public string FileName { get; set; }
-    public int FileSize { get; set; }
-    public DateTime FileDate { get; set; }
-    public string FileType { get; set; }
-    public byte[] File { get; set; }
-    public string Key { get; set; }
-    //TODO-NOW Take this IV Secret out
-    private string IV { get; set; } = "/oa4SbceDr5miR4ReRb1GQ==";
-
-    public string Encrypt(string plainText)
+    public class SecretItem
     {
-        // Create a new AesManaged.    
-        using (AesManaged aes = new AesManaged())
+        public int Version { get; set; }
+        public string PlaintextMessage { get; set; }
+        public bool FileAttached { get; set; } = false;
+        public string FileName { get; set; }
+        public int FileSize { get; set; }
+        public DateTime FileDate { get; set; }
+        public string FileType { get; set; }
+        public byte[] File { get; set; }
+        public byte[] Key { get; set; }
+        //TODO-NOW Take this IV Secret out
+        private byte[] IV { get; set; } = System.Text.Encoding.ASCII.GetBytes("/oa4SbceDr5miR4ReRb1GQ==");
+
+        public string Encrypt(string plainText)
         {
-            Key = Convert.ToBase64String(aes.Key);
-            if (string.IsNullOrEmpty(IV))
+            // Create a new AesManaged.    
+            using (AesManaged aes = new AesManaged())
             {
-                IV = Convert.ToBase64String(aes.IV);
 
-            }
-            // Create encryptor    
-            ICryptoTransform encryptor = aes.CreateEncryptor(Convert.FromBase64String(Key), Convert.FromBase64String(IV));
+                // Create encryptor    
+                ICryptoTransform encryptor = aes.CreateEncryptor(Key, IV);
 
-            
-            // Create MemoryStream    
-            using (MemoryStream ms = new MemoryStream())
-            {
-                // Create crypto stream using the CryptoStream class. This class is the key to encryption    
-                // and encrypts and decrypts data from any given stream. In this case, we will pass a memory stream    
-                // to encrypt    
-                using (CryptoStream cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+
+                // Create MemoryStream    
+                using (MemoryStream ms = new MemoryStream())
                 {
-                    // Create StreamWriter and write data to a stream    
-                    using (StreamWriter sw = new StreamWriter(cs))
-                        sw.Write(plainText);
-                    // Assign to property
-                    return Convert.ToBase64String(ms.ToArray());
+                    // Create crypto stream using the CryptoStream class. This class is the key to encryption    
+                    // and encrypts and decrypts data from any given stream. In this case, we will pass a memory stream    
+                    // to encrypt    
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+                    {
+                        // Create StreamWriter and write data to a stream    
+                        using (StreamWriter sw = new StreamWriter(cs))
+                            sw.Write(plainText);
+                        // return result
+                        return Convert.ToBase64String(ms.ToArray());
+                    }
+
                 }
             }
-        }
 
-    }
-    public string Decrypt(byte[] cipherText)
-    {
-        string plaintext = null;
-        // Create AesManaged    
-        using (AesManaged aes = new AesManaged())
+        }
+        public string Decrypt(byte[] cipherText)
         {
-            // Create a decryptor    
-            ICryptoTransform decryptor = aes.CreateDecryptor(Convert.FromBase64String(Key), Convert.FromBase64String(IV));
-            // Create the streams used for decryption.    
-            using (MemoryStream ms = new MemoryStream(cipherText))
+            string plaintext = null;
+            // Create AesManaged    
+            using (AesManaged aes = new AesManaged())
             {
-                // Create crypto stream    
-                using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                // Create a decryptor    
+                ICryptoTransform decryptor = aes.CreateDecryptor(Key, IV);
+                // Create the streams used for decryption.    
+                using (MemoryStream ms = new MemoryStream(cipherText))
                 {
-                    // Read crypto stream    
-                    using (StreamReader reader = new StreamReader(cs))
-                        plaintext = reader.ReadToEnd();
+                    // Create crypto stream    
+                    using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                    {
+                        // Read crypto stream    
+                        using (StreamReader reader = new StreamReader(cs))
+                            plaintext = reader.ReadToEnd();
+                    }
                 }
             }
+            return plaintext;
         }
-        return plaintext;
     }
 }
+

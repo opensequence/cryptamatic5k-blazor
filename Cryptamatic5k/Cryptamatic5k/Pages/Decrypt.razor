@@ -3,27 +3,32 @@
 <h1>Decrypt</h1>
 <p>
     <label for="plaintext">PlainText:</label>
-    <input @bind="plaintext" name="plaintext" />
+
+    <textarea class="form-control" rows="5" id='text' @bind="plaintext" name="plaintext" placeholder="Enter your secret."></textarea>
 </p>
 <p>
     <label for="key">Key:</label>
-    <input @bind="newSecret.Key" name="Key" />
+    <input @bind="key" name="Key" />
 </p>
 <p>
 
 </p>
-<label for="IV">EncryptedMessage:</label>
-<input @bind="base64EncryptedMessage" />
+<label for="EncryptedMessage">EncryptedMessage:</label>
+<input @bind="EncryptedMessage" />
 <button @onclick="ExecuteDecrypt">Decrypt</button>
 @code{
 
-    private SecretItem newSecret = new SecretItem();
+    private opensequence.Cryptamatic5k.SecretItem newSecret = new opensequence.Cryptamatic5k.SecretItem();
+    private opensequence.Cryptamatic5k.SecretItemJson newSecretJson = new opensequence.Cryptamatic5k.SecretItemJson();
     private string plaintext;
-    private string base64EncryptedMessage;
+    private string key;
+    private string EncryptedMessage;
 
     private void ExecuteDecrypt()
     {
-        plaintext = newSecret.Decrypt(Convert.FromBase64String(base64EncryptedMessage));
+        //Decrypt Message and assign JSOn object properties to newsecretJson object
+        newSecretJson = opensequence.Cryptamatic5k.SecretItemJson.ConvertFromJson(newSecret.Decrypt(Convert.FromBase64String(EncryptedMessage)));
+        plaintext = newSecretJson.PlaintextMessage;
     }
 }
 
