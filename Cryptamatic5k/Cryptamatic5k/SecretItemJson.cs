@@ -12,8 +12,6 @@ namespace opensequence.Cryptamatic5k
         public DateTime FileDate { get; set; }
         public string FileType { get; set; }
         public byte[] File { get; set; }
-        public byte[] Key { get; set; }
-        private byte[] IV { get; set; }
         public SecretItemJson()
         {
         }

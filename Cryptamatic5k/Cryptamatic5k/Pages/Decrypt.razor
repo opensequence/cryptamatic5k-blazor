@@ -2,32 +2,31 @@
 
 <h1>Decrypt</h1>
 <p>
+    <label for="EncryptedMessage">EncryptedMessage:</label>
+<textarea class="form-control" rows="5" id='text' @bind="EncryptedMessage" name="EncryptedMessage" placeholder="Enter your encrypted message"></textarea>
+</p>
+<p>
+    <label for="passsword">Password:</label>
+    <input @bind="password" name="Password" />
+</p>
+<p>
     <label for="plaintext">PlainText:</label>
 
-    <textarea class="form-control" rows="5" id='text' @bind="plaintext" name="plaintext" placeholder="Enter your secret."></textarea>
+    <textarea class="form-control" rows="5" id='text' @bind="plaintext" name="plaintext" placeholder=""></textarea>
+    <button @onclick="ExecuteDecrypt">Decrypt</button>
 </p>
-<p>
-    <label for="key">Key:</label>
-    <input @bind="key" name="Key" />
-</p>
-<p>
-
-</p>
-<label for="EncryptedMessage">EncryptedMessage:</label>
-<input @bind="EncryptedMessage" />
-<button @onclick="ExecuteDecrypt">Decrypt</button>
 @code{
 
     private opensequence.Cryptamatic5k.SecretItem newSecret = new opensequence.Cryptamatic5k.SecretItem();
     private opensequence.Cryptamatic5k.SecretItemJson newSecretJson = new opensequence.Cryptamatic5k.SecretItemJson();
     private string plaintext;
-    private string key;
+    private string password;
     private string EncryptedMessage;
 
     private void ExecuteDecrypt()
     {
         //Decrypt Message and assign JSOn object properties to newsecretJson object
-        newSecretJson = opensequence.Cryptamatic5k.SecretItemJson.ConvertFromJson(newSecret.Decrypt(Convert.FromBase64String(EncryptedMessage)));
+        newSecretJson = opensequence.Cryptamatic5k.SecretItemJson.ConvertFromJson(newSecret.Decrypt(Convert.FromBase64String(EncryptedMessage), password));
         plaintext = newSecretJson.PlaintextMessage;
     }
 }

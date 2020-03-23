@@ -7,21 +7,21 @@
     <textarea class="form-control" rows="5" id='text'@bind="plaintext" name="plaintext" placeholder="Enter your secret."></textarea>
 </p>
 <p>
-    <label for="key">Key:</label>
-    <input @bind="key" name="Key" />
+    <label for="passsword">Password:</label>
+    <input @bind="password" name="Password" />
 </p>
-   <p>
+<p>
+    <label for="EncryptedMessage">EncryptedMessage:</label>
+<textarea class="form-control" rows="5" id='text' @bind="EncryptedMessage" name="EncryptedMessage" placeholder=""></textarea>
+    <button @onclick="ExecuteEncrypt">Encrypt</button>
+</p>     
 
-   </p>     
-<label for="EncryptedMessage">EncryptedMessage:</label>
-<input @bind="EncryptedMessage" />
-<button @onclick="ExecuteEncrypt">Encrypt</button>
 
 @code{
     private opensequence.Cryptamatic5k.SecretItem newSecret = new opensequence.Cryptamatic5k.SecretItem();
     private opensequence.Cryptamatic5k.SecretItemJson newSecretJson = new opensequence.Cryptamatic5k.SecretItemJson();
     private string plaintext;
-    private string key;
+    private string password;
     private string json;
     private string EncryptedMessage;
     
@@ -34,14 +34,12 @@
         
         // Assign values to JSON class
         newSecretJson.PlaintextMessage = newSecret.PlaintextMessage;
-        newSecret.Key = System.Text.Encoding.ASCII.GetBytes(key);
-        newSecretJson.Key = newSecret.Key;
         
         //Convert object to JSON
         json = newSecretJson.ConvertToJson();
         
         //Encrypt JSON string and display to user
-        EncryptedMessage = newSecret.Encrypt(json);
+        EncryptedMessage = newSecret.Encrypt(json, password);
 
 
     }

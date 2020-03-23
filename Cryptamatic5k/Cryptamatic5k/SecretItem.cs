@@ -1,25 +1,31 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace opensequence.Cryptamatic5k
 {
     public class SecretItem
     {
-        public int Version { get; set; }
+        public int Version { get; set; } = 2;
         public string PlaintextMessage { get; set; }
         public bool FileAttached { get; set; } = false;
         public string FileName { get; set; }
-        public int FileSize { get; set; }
+        public double FileSize { get; set; }
         public DateTime FileDate { get; set; }
         public string FileType { get; set; }
         public byte[] File { get; set; }
-        public byte[] Key { get; set; }
-        //TODO-NOW Take this IV Secret out
-        private byte[] IV { get; set; } = System.Text.Encoding.ASCII.GetBytes("/oa4SbceDr5miR4ReRb1GQ==");
+        private byte[] Key { get; set; }
+        private byte[] IV { get; set; }
 
-        public string Encrypt(string plainText)
+
+        public string Encrypt(string plainText, string password)
         {
+            //TODO-NOW Redesign the Key and IV derivation (derive from password with salt?)
+            //Derive Key from Password
+            Key = CreateHash(password);
+            //Derive IV from Password        
+            IV = CreateHash(password + "/oa4SbceDr5miR4ReRb1GQ==", 16);
             // Create a new AesManaged.    
             using (AesManaged aes = new AesManaged())
             {
@@ -47,9 +53,13 @@ namespace opensequence.Cryptamatic5k
             }
 
         }
-        public string Decrypt(byte[] cipherText)
+        public string Decrypt(byte[] cipherText, string password)
         {
             string plaintext = null;
+            //Derive Key from Password
+            Key = CreateHash(password);
+            //Derive IV from Password        
+            IV = CreateHash(password + "/oa4SbceDr5miR4ReRb1GQ==", 16);
             // Create AesManaged    
             using (AesManaged aes = new AesManaged())
             {
@@ -68,6 +78,23 @@ namespace opensequence.Cryptamatic5k
                 }
             }
             return plaintext;
+        }
+
+        private static byte[] CreateHash(string text, int length = 32)
+        {
+            byte[] hash = new byte[length];
+            // Create a SHA256   
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                // ComputeHash - returns byte array  
+                hash = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(text));
+            }
+            if (hash.Length != length)
+            {
+                Array.Resize(ref hash, length);
+            }
+            return hash;
+            
         }
     }
 }
